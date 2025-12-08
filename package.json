@@ -5,7 +5,9 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js", 
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
@@ -17,5 +19,16 @@
     "express-session": "^1.18.2",
     "knex": "^3.1.0",
     "pg": "^8.16.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jorge11BYU/project3.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jorge11BYU/project3/issues"
+  },
+  "homepage": "https://github.com/jorge11BYU/project3#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.11"
   }
 }
