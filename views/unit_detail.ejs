@@ -1,0 +1,47 @@
+<%- include('partials/header') %>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Property Details</h5>
+                <a href="/units" class="btn btn-sm btn-outline-secondary">&larr; Back to List</a>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div>
+                        <h2 class="card-title fw-bold text-primary"><%= unit.nickname %></h2>
+                        <span class="badge bg-info text-dark"><%= unit.property_type %></span>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6 class="text-muted text-uppercase small">Address</h6>
+                        <p class="fs-5">
+                            <%= unit.street || 'No street provided' %><br>
+                            <%= unit.city %>, <%= unit.state %> <%= unit.zip %>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted text-uppercase small">Tenant Info</h6>
+                        <p class="fs-5 text-muted">
+                            <em>Vacant (No tenant assigned)</em>
+                        </p>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="d-flex gap-2 justify-content-end">
+                    <button class="btn btn-warning" disabled>Edit Property</button>
+                    
+                    <form action="/units/delete/<%= unit.property_id %>" method="POST">
+                        <button type="submit" class="btn btn-danger">Delete Property</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('partials/footer') %>

@@ -1,311 +1,103 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Condo Dashboard</title>
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Bootstrap Icons -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
-  
-  <style>
-    body {
-      background-color: #e5e5e5;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 2rem;
-    }
+<%- include('partials/header') %>
 
-    /* Header with hamburger and user profile icons */
-    .header-container {
-      position: relative;
-      max-width: 1200px;
-      margin: 0 auto 2rem auto;
-    }
-
-    .header-container h1 {
-      font-family: 'Montserrat', sans-serif;
-      font-weight: 700;
-      font-size: 2.5rem;
-      color: #2c3e50;
-      text-align: center;
-    }
-
-    .header-icons {
-      position: absolute;
-      top: 0;
-      right: 0;
-      display: flex;
-      gap: 0.5rem; /* space between hamburger and profile */
-    }
-
-    .hamburger-menu {
-      width: 40px;
-      height: 40px;
-      background-color: #e5e5e5; /* match page background */
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: #2c3e50;
-      font-size: 1.2rem;
-      cursor: pointer;
-    }
-
-    .user-profile {
-      width: 40px;
-      height: 40px;
-      background-color: #3498db;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: #fff;
-      font-size: 1.2rem;
-      cursor: pointer;
-    }
-
-    /* Dashboard container */
-    .dashboard-container {
-      position: relative;
-      width: 90%;
-      max-width: 1200px;
-      height: 800px;
-      margin: 0 auto;
-      padding: 10px;
-      box-sizing: border-box;
-    }
-
-    .dashboard-section {
-      background-color: #fff;
-      border-radius: 1rem;
-      padding: 1.5rem;
-      box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .section-title {
-      font-weight: bold;
-      font-size: 1.3rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .preview-list {
-      list-style: none;
-      padding-left: 0;
-      margin: 0;
-      font-size: 0.9rem;
-      overflow-y: auto;
-    }
-
-    .preview-list li {
-      border-bottom: 1px solid #eee;
-      padding: 4px 0;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .status {
-      font-weight: bold;
-      font-size: 0.8rem;
-      padding: 0 6px;
-      border-radius: 4px;
-    }
-
-    .status.pending { background-color: #6f6f6f; color: #fff; }
-    .status.completed { background-color: #27ae60; color: #fff; }
-
-    .chart-container {
-      position: relative;
-      height: 200px;
-      width: 100%;
-      margin-bottom: 1rem;
-    }
-
-    .calendar-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 0.5rem;
-    }
-
-    .calendar-table th, .calendar-table td {
-      text-align: center;
-      padding: 0.5rem;
-      border: 1px solid #ddd;
-      height: 50px;
-    }
-
-    .calendar-today {
-      background-color: #d1f0d1;
-      font-weight: bold;
-      border-radius: 0.25rem;
-    }
-
-    /* Absolute positions */
-    .maintenance {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      width: calc(75% - 20px);
-      height: calc(25% - 10px);
-    }
-
-    .expenses {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      width: calc(25% - 20px);
-      height: calc(50% - 20px);
-    }
-
-    .calendar {
-      position: absolute;
-      bottom: 10px;
-      left: 10px;
-      width: calc(75% - 20px);
-      height: calc(75% - 20px);
-    }
-
-    .messages {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
-      width: calc(25% - 20px);
-      height: calc(50% - 10px);
-    }
-
-    @media (max-width: 900px) {
-      .dashboard-container { height: auto; }
-      .dashboard-section {
-        position: static !important;
-        width: 100% !important;
-        height: auto !important;
-        margin-bottom: 1.5rem;
-      }
-      .header-icons { position: static; margin-top: 0.5rem; }
-    }
-  </style>
-</head>
-<body>
-
-  <!-- Header -->
-  <div class="header-container">
+<div class="d-flex justify-content-between align-items-center mb-4">
     <h1>The Pines Dashboard</h1>
-    <div class="header-icons">
-      <div class="hamburger-menu">
-        <i class="bi bi-list"></i>
-      </div>
-      <div class="user-profile">
-        <i class="bi bi-person"></i>
-      </div>
-    </div>
-  </div>
+    <span class="text-muted">Welcome, <%= user.first_name %></span>
+</div>
 
-  <div class="dashboard-container">
+<div class="row">
+    <div class="col-md-8">
+        
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">🛠 Pending Maintenance</h5>
+                <ul class="list-group list-group-flush">
+                    <% if (maintenance.length === 0) { %>
+                        <li class="list-group-item text-muted">No pending requests.</li>
+                    <% } %>
+                    <% maintenance.forEach(item => { %>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong><%= item.nickname %></strong>: <%= item.description %>
+                            </div>
+                            <span class="badge bg-warning text-dark"><%= item.status %></span>
+                        </li>
+                    <% }) %>
+                </ul>
+                <div class="mt-3 text-end">
+                    <a href="/maintenance" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+            </div>
+        </div>
 
-    <!-- Maintenance Requests -->
-    <div class="dashboard-section maintenance">
-      <div class="section-title">🛠️ Pending Maintenance</div>
-      <ul class="preview-list">
-        <li>Leaky faucet <span class="status pending">Pending</span></li>
-        <li>Hallway light <span class="status completed">Completed</span></li>
-        <li>Elevator inspection <span class="status pending">Pending</span></li>
-      </ul>
-    </div>
-
-    <!-- Monthly Expenses -->
-    <div class="dashboard-section expenses">
-      <div class="section-title">💰 Prev. Month Costs</div>
-      <div class="chart-container">
-        <canvas id="expensesChart"></canvas>
-      </div>
-      <ul class="preview-list">
-        <li>Electricity: $1,200</li>
-        <li>Water & Sewage: $800</li>
-        <li>Maintenance: $450</li>
-        <li>Security: $300</li>
-        <li>Other: $200</li>
-      </ul>
-    </div>
-
-    <!-- Shared Calendar -->
-    <div class="dashboard-section calendar">
-      <div class="section-title">📅 Shared Calendar</div>
-      <table class="calendar-table">
-        <thead>
-          <tr>
-            <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td>
-          </tr>
-          <tr>
-            <td>6</td><td>7</td><td>8</td><td>9</td><td>10 <br><small>HOA <br>Meeting</small></td><td>11</td><td>12</td>
-          </tr>
-          <tr>
-            <td>13</td><td>14</td><td>15 <br><small>Fire <br>Drill</small></td><td>16</td><td>17</td><td>18</td><td>19</td>
-          </tr>
-          <tr>
-            <td>20 <br><small>BBQ</small></td><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td><td>26</td>
-          </tr>
-          <tr>
-            <td>27</td><td>28</td><td>29</td><td>30</td><td></td><td></td><td></td>
-          </tr>
-        </tbody>
-      </table>
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">📅 Shared Calendar</h5>
+                <table class="table table-bordered text-center table-sm">
+                    <thead>
+                        <tr class="table-light">
+                            <th>Date</th>
+                            <th>Event</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (events.length === 0) { %>
+                            <tr><td colspan="3" class="text-muted">No upcoming events.</td></tr>
+                        <% } %>
+                        <% events.forEach(event => { %>
+                            <tr>
+                                <td><%= new Date(event.start_time).toLocaleDateString() %></td>
+                                <td><%= event.event_title %></td>
+                                <td><%= new Date(event.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) %></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
-    <!-- Message Board -->
-    <div class="dashboard-section messages">
-      <div class="section-title">📢 Message Board</div>
-      <ul class="preview-list">
-        <li>Pool closed Friday <span class="status pending">New</span></li>
-        <li>Garage renovation <span class="status completed">Read</span></li>
-        <li>HOA schedule posted <span class="status pending">New</span></li>
-      </ul>
+    <div class="col-md-4">
+        
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">💰 Recent Expenses</h5>
+                <div class="alert alert-light border">
+                    <small class="text-muted">Most recent costs:</small>
+                    <ul class="list-unstyled mt-2">
+                        <% expenses.forEach(exp => { %>
+                            <li class="d-flex justify-content-between border-bottom py-1">
+                                <span><%= exp.expense_category %></span>
+                                <strong>$<%= exp.amount %></strong>
+                            </li>
+                        <% }) %>
+                    </ul>
+                </div>
+                <a href="/expenses" class="d-block text-center text-decoration-none">View Budget &rarr;</a>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">📢 Message Board</h5>
+                <ul class="list-group list-group-flush">
+                    <% messages.forEach(msg => { %>
+                        <li class="list-group-item px-0">
+                            <div class="d-flex justify-content-between">
+                                <small class="text-truncate" style="max-width: 150px;"><%= msg.message %></small>
+                                <span class="badge bg-success" style="height: fit-content;">New</span>
+                            </div>
+                        </li>
+                    <% }) %>
+                </ul>
+                <div class="mt-2 text-center">
+                    <a href="/board" class="btn btn-sm btn-light w-100">Go to Board</a>
+                </div>
+            </div>
+        </div>
+
     </div>
+</div>
 
-  </div>
-
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-  <!-- Chart.js Script -->
-  <script>
-    const ctx = document.getElementById('expensesChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Electricity', 'Water', 'Maintenance', 'Security', 'Other'],
-        datasets: [{
-          label: 'Expenses ($)',
-          data: [1200, 800, 450, 300, 200],
-          backgroundColor: ['#2980b9','#3498db','#5dade2','#85c1e9','#aed6f1'],
-          borderRadius: 5
-        }]
-      },
-      options: {
-        responsive: true,
-        layout: { padding: { bottom: 20 } }, // add bottom padding
-        plugins: { legend: { display: false } },
-        scales: {
-          x: {
-            ticks: { maxRotation: 0, minRotation: 90 }
-          },
-          y: { beginAtZero: true }
-        }
-      }
-    });
-  </script>
-
-</body>
-</html>
+<%- include('partials/footer') %>

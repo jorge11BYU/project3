@@ -1,0 +1,32 @@
+<%- include('partials/header') %>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">New Maintenance Request</h5>
+            </div>
+            <div class="card-body">
+                <form action="/maintenance/add" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Select Property</label>
+                        <select name="property_id" class="form-select" required>
+                            <% properties.forEach(p => { %>
+                                <option value="<%= p.property_id %>"><%= p.nickname %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Description of Issue</label>
+                        <textarea name="description" class="form-control" rows="4" placeholder="Describe the problem..." required></textarea>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Submit Request</button>
+                        <a href="/maintenance" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('partials/footer') %>

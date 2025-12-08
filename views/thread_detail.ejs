@@ -1,0 +1,28 @@
+<%- include('partials/header') %>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="mb-3">
+            <a href="/board" class="btn btn-sm btn-outline-secondary">&larr; Back to Board</a>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center bg-light">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                        <%= message.username.charAt(0).toUpperCase() %>
+                    </div>
+                    <strong><%= message.username %></strong>
+                </div>
+                <small class="text-muted"><%= new Date(message.created_time).toLocaleString() %></small>
+            </div>
+            <div class="card-body p-4">
+                <p class="card-text fs-5" style="white-space: pre-wrap;"><%= message.message %></p>
+            </div>
+            <div class="card-footer text-muted bg-white">
+                <small>Replies coming soon...</small>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('partials/footer') %>
