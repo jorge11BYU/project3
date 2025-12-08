@@ -1,0 +1,38 @@
+<%- include('partials/header') %>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm sticky-top" style="top: 20px;">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Post Update</h5>
+            </div>
+            <div class="card-body">
+                <form action="/board/add" method="POST">
+                    <div class="mb-3">
+                        <textarea name="message" class="form-control" rows="4" placeholder="Share an update with owners..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Post Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <h3 class="mb-3">Latest Messages</h3>
+        <div class="list-group shadow-sm">
+            <% if (messages.length === 0) { %>
+                <div class="list-group-item text-center py-4 text-muted">No messages yet. Be the first to post!</div>
+            <% } %>
+            <% messages.forEach(m => { %>
+                <a href="/board/thread/<%= m.message_id %>" class="list-group-item list-group-item-action p-4">
+                    <div class="d-flex w-100 justify-content-between mb-2">
+                        <h5 class="mb-1 text-primary"><%= m.username %></h5>
+                        <small class="text-muted"><%= new Date(m.created_time).toLocaleString() %></small>
+                    </div>
+                    <p class="mb-1 text-dark"><%= m.message %></p>
+                </a>
+            <% }) %>
+        </div>
+    </div>
+</div>
+<%- include('partials/footer') %>
