@@ -1,9 +1,9 @@
-import 'dotenv/config'; 
+import 'dotenv/config';
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import session from "express-session";
-import db from "./db.js"; 
+import db from "./db.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -15,14 +15,14 @@ const __dirname = path.dirname(__filename);
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.urlencoded({ extended: true })); 
+app.use(express.urlencoded({ extended: true }));
 
 // --- Session ---
 app.use(session({
   secret: process.env.SESSION_SECRET || 'dev_secret_key',
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false } 
+  cookie: { secure: false }
 }));
 
 function checkAuth(req, res, next) {
@@ -46,7 +46,7 @@ app.post("/login", async (req, res) => {
   const { username, password } = req.body;
   try {
     const user = await db('users').where({ username }).first();
-    if (user && user.password_hash === password) { 
+    if (user && user.password_hash === password) {
       req.session.user = user;
       res.redirect("/");
     } else {
@@ -78,12 +78,14 @@ app.get("/", checkAuth, async (req, res) => {
       .limit(5);
 
     const messages = await db('messages')
-        .orderBy('created_time', 'desc')
-        .limit(3);
+      .join('users', 'messages.user_id', 'users.user_id')
+      .select('messages.*', 'users.username')
+      .orderBy('created_time', 'desc')
+      .limit(3);
 
     const expenses = await db('expenses')
-        .orderBy('expense_date', 'desc')
-        .limit(5);
+      .orderBy('expense_date', 'desc')
+      .limit(5);
 
     res.render("landingpage", { user: req.session.user, maintenance, events, messages, expenses });
   } catch (err) {
@@ -99,22 +101,22 @@ app.get("/landingpage", checkAuth, (req, res) => {
 // --- UNITS (Properties don't have dates, so logic is same) ---
 app.get("/units", checkAuth, async (req, res) => {
   try {
-      const search = req.query.search;
-      let query = db('properties').select('*').orderBy('property_id');
-      
-      if (search) {
-          query.where(builder => {
-             builder.where('nickname', 'ilike', `%${search}%`)
-               .orWhere('city', 'ilike', `%${search}%`)
-               .orWhere('state', 'ilike', `%${search}%`);
-          });
-      }
-      
-      const properties = await query;
-      res.render("units_list", { properties, searchTerm: search });
+    const search = req.query.search;
+    let query = db('properties').select('*').orderBy('property_id');
+
+    if (search) {
+      query.where(builder => {
+        builder.where('nickname', 'ilike', `%${search}%`)
+          .orWhere('city', 'ilike', `%${search}%`)
+          .orWhere('state', 'ilike', `%${search}%`);
+      });
+    }
+
+    const properties = await query;
+    res.render("units_list", { properties, searchTerm: search });
   } catch (err) {
-      console.error(err);
-      res.send("Error loading properties");
+    console.error(err);
+    res.send("Error loading properties");
   }
 });
 
@@ -123,13 +125,30 @@ app.get("/units/:id", checkAuth, async (req, res) => {
   res.render("unit_detail", { unit });
 });
 
+app.get("/units/edit/:id", checkAuth, async (req, res) => {
+  const unit = await db('properties').where({ property_id: req.params.id }).first();
+  res.render("unit_edit", { unit });
+});
+
+app.post("/units/edit/:id", checkAuth, async (req, res) => {
+  await db('properties').where({ property_id: req.params.id }).update({
+    nickname: req.body.nickname,
+    property_type: req.body.property_type,
+    street: req.body.street,
+    city: req.body.city,
+    state: req.body.state,
+    zip: req.body.zip
+  });
+  res.redirect(`/units/${req.params.id}`);
+});
+
 app.post("/units/add", checkAuth, async (req, res) => {
   await db('properties').insert({
-    user_id: req.session.user.user_id, 
+    user_id: req.session.user.user_id,
     nickname: req.body.nickname,
     city: req.body.city,
     state: req.body.state,
-    property_type: 'Condo' 
+    property_type: 'Condo'
   });
   res.redirect("/units");
 });
@@ -148,13 +167,13 @@ app.get("/maintenance", checkAuth, async (req, res) => {
     .orderBy('date_reported', 'desc');
 
   if (search) {
-      query.where(builder => {
-          builder.where('maintenance_requests.description', 'ilike', `%${search}%`)
-                 .orWhere('properties.nickname', 'ilike', `%${search}%`)
-                 .orWhere('maintenance_requests.status', 'ilike', `%${search}%`)
-                 // Allow searching "December", "2025", "Monday", etc.
-                 .orWhereRaw("TO_CHAR(date_reported, 'FMDay, FMMonth DD, YYYY') ILIKE ?", [`%${search}%`]);
-      });
+    query.where(builder => {
+      builder.where('maintenance_requests.description', 'ilike', `%${search}%`)
+        .orWhere('properties.nickname', 'ilike', `%${search}%`)
+        .orWhere('maintenance_requests.status', 'ilike', `%${search}%`)
+        // Allow searching "December", "2025", "Monday", etc.
+        .orWhereRaw("TO_CHAR(date_reported, 'FMDay, FMMonth DD, YYYY') ILIKE ?", [`%${search}%`]);
+    });
   }
 
   const requests = await query;
@@ -201,13 +220,13 @@ app.get("/expenses", checkAuth, async (req, res) => {
     .orderBy('expense_date', 'desc');
 
   if (search) {
-      query.where(builder => {
-          builder.where('expenses.vendor', 'ilike', `%${search}%`)
-                 .orWhere('expenses.expense_category', 'ilike', `%${search}%`)
-                 .orWhere('properties.nickname', 'ilike', `%${search}%`)
-                 // Date Search
-                 .orWhereRaw("TO_CHAR(expense_date, 'FMDay, FMMonth DD, YYYY') ILIKE ?", [`%${search}%`]);
-      });
+    query.where(builder => {
+      builder.where('expenses.vendor', 'ilike', `%${search}%`)
+        .orWhere('expenses.expense_category', 'ilike', `%${search}%`)
+        .orWhere('properties.nickname', 'ilike', `%${search}%`)
+        // Date Search
+        .orWhereRaw("TO_CHAR(expense_date, 'FMDay, FMMonth DD, YYYY') ILIKE ?", [`%${search}%`]);
+    });
   }
 
   const expenses = await query;
@@ -239,12 +258,12 @@ app.get("/board", checkAuth, async (req, res) => {
     .orderBy('created_time', 'desc');
 
   if (search) {
-      query.where(builder => {
-        builder.where('messages.message', 'ilike', `%${search}%`)
-           .orWhere('users.username', 'ilike', `%${search}%`)
-           // Date Search (Timestamp requires casting)
-           .orWhereRaw("TO_CHAR(created_time, 'FMDay, FMMonth DD, YYYY') ILIKE ?", [`%${search}%`]);
-      });
+    query.where(builder => {
+      builder.where('messages.message', 'ilike', `%${search}%`)
+        .orWhere('users.username', 'ilike', `%${search}%`)
+        // Date Search (Timestamp requires casting)
+        .orWhereRaw("TO_CHAR(created_time, 'FMDay, FMMonth DD, YYYY') ILIKE ?", [`%${search}%`]);
+    });
   }
 
   const messages = await query;
@@ -273,13 +292,13 @@ app.post("/board/add", checkAuth, async (req, res) => {
 app.get("/calendar", checkAuth, async (req, res) => {
   const search = req.query.search;
   let query = db('calendar_events').select('*').orderBy('start_time');
-  
+
   if (search) {
-      query.where(builder => {
-        builder.where('event_title', 'ilike', `%${search}%`)
+    query.where(builder => {
+      builder.where('event_title', 'ilike', `%${search}%`)
         // Date Search on Start Time
         .orWhereRaw("TO_CHAR(start_time, 'FMDay, FMMonth DD, YYYY') ILIKE ?", [`%${search}%`]);
-      });
+    });
   }
 
   const events = await query;

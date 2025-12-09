@@ -1,0 +1,72 @@
+<%- include('partials/header') %>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Edit Property</h5>
+                    <a href="/units/<%= unit.property_id %>" class="btn btn-sm btn-outline-secondary">&larr; Cancel</a>
+                </div>
+                <div class="card-body">
+                    <form action="/units/edit/<%= unit.property_id %>" method="POST">
+                        <div class="mb-3">
+                            <label for="nickname" class="form-label">Property Nickname</label>
+                            <input type="text" class="form-control" id="nickname" name="nickname"
+                                value="<%= unit.nickname %>" required>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="property_type" class="form-label">Property Type</label>
+                                <select class="form-select" id="property_type" name="property_type">
+                                    <option value="Condo" <%=unit.property_type==='Condo' ? 'selected' : '' %>>Condo
+                                    </option>
+                                    <option value="Townhouse" <%=unit.property_type==='Townhouse' ? 'selected' : '' %>
+                                        >Townhouse</option>
+                                    <option value="Apartment" <%=unit.property_type==='Apartment' ? 'selected' : '' %>
+                                        >Apartment</option>
+                                    <option value="Studio" <%=unit.property_type==='Studio' ? 'selected' : '' %>>Studio
+                                    </option>
+                                    <option value="Single Family" <%=unit.property_type==='Single Family' ? 'selected'
+                                        : '' %>>Single Family</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <h6 class="text-muted text-uppercase small mt-4">Address</h6>
+                        <div class="mb-3">
+                            <label for="street" class="form-label">Street Address</label>
+                            <input type="text" class="form-control" id="street" name="street"
+                                value="<%= unit.street || '' %>">
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-5">
+                                <label for="city" class="form-label">City</label>
+                                <input type="text" class="form-control" id="city" name="city" value="<%= unit.city %>"
+                                    required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="state" class="form-label">State</label>
+                                <input type="text" class="form-control" id="state" name="state"
+                                    value="<%= unit.state %>" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="zip" class="form-label">Zip Code</label>
+                                <input type="text" class="form-control" id="zip" name="zip"
+                                    value="<%= unit.zip || '' %>">
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>

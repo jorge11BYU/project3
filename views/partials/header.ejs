@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Pines | Resident Portal</title>
-    
+
     <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
@@ -34,9 +36,9 @@
         /* PREMIUM NAVBAR STYLES */
         .navbar-custom {
             background: var(--primary-gradient);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             padding: 1rem 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .navbar-brand {
@@ -49,8 +51,8 @@
             gap: 10px;
         }
 
-        .navbar-brand i { 
-            font-size: 1.3rem; 
+        .navbar-brand i {
+            font-size: 1.3rem;
             opacity: 0.9;
         }
 
@@ -91,9 +93,9 @@
             background: white;
             color: var(--primary-dark);
             border-color: white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
-        
+
         /* CONTAINER FADE IN ANIMATION */
         .main-container {
             animation: fadeIn 0.6s ease-out;
@@ -101,22 +103,86 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* THEME OVERRIDES */
+        a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: var(--primary-dark);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        .btn-primary:hover,
+        .btn-primary:active,
+        .btn-primary:focus {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .btn-outline-primary {
+            color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        .btn-outline-primary:hover,
+        .btn-outline-primary:active,
+        .btn-outline-primary:focus {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+            color: white;
+        }
+
+        .text-primary {
+            color: var(--primary-dark) !important;
+        }
+
+        .page-link {
+            color: var(--primary-dark);
+        }
+
+        .page-item.active .page-link {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        .bg-primary {
+            background-color: var(--primary-dark) !important;
+        }
+
+        .border-primary {
+            border-color: var(--primary-dark) !important;
         }
     </style>
 </head>
 
 <body class="d-flex flex-column min-vh-100">
-    
+
     <!-- NAVIGATION BAR -->
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom mb-5">
         <div class="container">
             <a class="navbar-brand" href="/">
                 <i class="bi bi-buildings-fill"></i> The Pines
             </a>
-            
-            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarContent">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
@@ -128,7 +194,7 @@
                     <li class="nav-item"><a class="nav-link" href="/board">Board</a></li>
                     <li class="nav-item"><a class="nav-link" href="/calendar">Calendar</a></li>
                 </ul>
-                
+
                 <div class="navbar-nav d-flex align-items-center gap-3">
                     <a class="nav-link nav-user-profile" href="/profile">
                         <i class="bi bi-person-circle fs-5"></i> <span>Profile</span>
@@ -138,6 +204,6 @@
             </div>
         </div>
     </nav>
-    
+
     <!-- MAIN CONTENT START -->
     <div class="container main-container">
