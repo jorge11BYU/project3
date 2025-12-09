@@ -1,8 +1,19 @@
 <%- include('partials/header') %>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Monthly Expenses</h2>
-    <a href="/expenses/new" class="btn btn-primary shadow-sm">+ Add Expense</a>
+<div class="row align-items-center mb-4">
+    <div class="col-md-4">
+        <h2>Expenses</h2>
+    </div>
+    <div class="col-md-5">
+        <form action="/expenses" method="GET" class="d-flex">
+            <input type="text" name="search" class="form-control me-2" placeholder="Search vendor or category..." value="<%= searchTerm || '' %>">
+            <button type="submit" class="btn btn-outline-secondary">Search</button>
+            <% if(searchTerm) { %> <a href="/expenses" class="btn btn-link">Clear</a> <% } %>
+        </form>
+    </div>
+    <div class="col-md-3 text-end">
+        <a href="/expenses/new" class="btn btn-primary shadow-sm">+ Add Expense</a>
+    </div>
 </div>
 
 <div class="card shadow-sm">
@@ -19,7 +30,7 @@
             </thead>
             <tbody>
                 <% if (expenses.length === 0) { %>
-                    <tr><td colspan="5" class="text-center py-3 text-muted">No expenses recorded yet.</td></tr>
+                    <tr><td colspan="5" class="text-center py-3 text-muted">No matching expenses found.</td></tr>
                 <% } %>
                 <% expenses.forEach(e => { %>
                 <tr>
