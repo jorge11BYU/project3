@@ -3,25 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Condo Manager</title>
+    <title>The Pines | Resident Portal</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <style>
+        /* GLOBAL THEME VARIABLES */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%);
+            --primary-dark: #2c3e50;
+            --accent-color: #4ca1af;
+            --bg-body: #f4f7f6;
+            --font-main: 'Inter', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-body);
+            color: #333;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* PREMIUM NAVBAR STYLES */
+        .navbar-custom {
+            background: var(--primary-gradient);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-brand i { 
+            font-size: 1.3rem; 
+            opacity: 0.9;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.85) !important;
+            padding: 0.5rem 1rem !important;
+            border-radius: 8px;
+            transition: all 0.25s ease;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .nav-user-profile {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* CUSTOM LOGOUT BUTTON */
+        .btn-custom-logout {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 50px;
+            padding: 0.4rem 1.4rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-custom-logout:hover {
+            background: white;
+            color: var(--primary-dark);
+            border-color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        /* CONTAINER FADE IN ANIMATION */
+        .main-container {
+            animation: fadeIn 0.6s ease-out;
+            padding-bottom: 3rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
+
 <body class="d-flex flex-column min-vh-100">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    
+    <!-- NAVIGATION BAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom mb-5">
         <div class="container">
-            <a class="navbar-brand" href="/">Condo Manager</a>
-            <div class="navbar-nav">
-                <a class="nav-link" href="/units">Units</a>
-                <a class="nav-link" href="/maintenance">Maintenance</a>
-                <a class="nav-link" href="/expenses">Expenses</a>
-                <a class="nav-link" href="/board">Board</a>
-                <a class="nav-link" href="/calendar">Calendar</a>
-            </div>
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="/profile">Profile</a>
-                <a class="nav-link btn btn-outline-light btn-sm" href="/logout">Logout</a>
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-buildings-fill"></i> The Pines
+            </a>
+            
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav ms-4 me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="/units">Units</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/maintenance">Maintenance</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/expenses">Expenses</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/board">Board</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/calendar">Calendar</a></li>
+                </ul>
+                
+                <div class="navbar-nav d-flex align-items-center gap-3">
+                    <a class="nav-link nav-user-profile" href="/profile">
+                        <i class="bi bi-person-circle fs-5"></i> <span>Profile</span>
+                    </a>
+                    <a class="btn btn-custom-logout btn-sm" href="/logout">Logout</a>
+                </div>
             </div>
         </div>
     </nav>
     
-    <div class="container">
+    <!-- MAIN CONTENT START -->
+    <div class="container main-container">

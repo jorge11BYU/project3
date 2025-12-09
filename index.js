@@ -1,9 +1,9 @@
-import 'dotenv/config'; 
+import 'dotenv/config';
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import session from "express-session";
-import db from "./db.js"; 
+import db from "./db.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -15,14 +15,14 @@ const __dirname = path.dirname(__filename);
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.urlencoded({ extended: true })); 
+app.use(express.urlencoded({ extended: true }));
 
 // --- Session Configuration ---
 app.use(session({
   secret: process.env.SESSION_SECRET || 'dev_secret_key',
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false } 
+  cookie: { secure: false }
 }));
 
 // --- Security Middleware ---
@@ -47,7 +47,7 @@ app.post("/login", async (req, res) => {
   const { username, password } = req.body;
   try {
     const user = await db('users').where({ username }).first();
-    if (user && user.password_hash === password) { 
+    if (user && user.password_hash === password) {
       req.session.user = user;
       res.redirect("/");
     } else {
@@ -82,30 +82,30 @@ app.get("/", checkAuth, async (req, res) => {
 
     // 3. Fetch recent messages
     const messages = await db('messages')
-        .orderBy('created_time', 'desc')
-        .limit(3);
+      .orderBy('created_time', 'desc')
+      .limit(3);
 
     // 4. Fetch recent expenses
     const expenses = await db('expenses')
-        .orderBy('expense_date', 'desc')
-        .limit(5);
+      .orderBy('expense_date', 'desc')
+      .limit(5);
 
-    res.render("landingpage", { 
-        user: req.session.user,
-        maintenance,
-        events,
-        messages,
-        expenses
+    res.render("landingpage", {
+      user: req.session.user,
+      maintenance,
+      events,
+      messages,
+      expenses
     });
   } catch (err) {
     console.error("Dashboard Error:", err);
     // Render with empty arrays so page doesn't crash if DB fails
-    res.render("landingpage", { 
-        user: req.session.user, 
-        maintenance: [], 
-        events: [], 
-        messages: [], 
-        expenses: [] 
+    res.render("landingpage", {
+      user: req.session.user,
+      maintenance: [],
+      events: [],
+      messages: [],
+      expenses: []
     });
   }
 });
@@ -117,11 +117,11 @@ app.get("/landingpage", checkAuth, (req, res) => {
 // --- UNITS (PROPERTIES) ---
 app.get("/units", checkAuth, async (req, res) => {
   try {
-      const properties = await db('properties').select('*').orderBy('property_id');
-      res.render("units_list", { properties });
+    const properties = await db('properties').select('*').orderBy('property_id');
+    res.render("units_list", { properties });
   } catch (err) {
-      console.error(err);
-      res.send("Error loading properties");
+    console.error(err);
+    res.send("Error loading properties");
   }
 });
 
@@ -132,11 +132,11 @@ app.get("/units/:id", checkAuth, async (req, res) => {
 
 app.post("/units/add", checkAuth, async (req, res) => {
   await db('properties').insert({
-    user_id: req.session.user.user_id, 
+    user_id: req.session.user.user_id,
     nickname: req.body.nickname,
     city: req.body.city,
     state: req.body.state,
-    property_type: 'Condo' 
+    property_type: 'Condo'
   });
   res.redirect("/units");
 });
