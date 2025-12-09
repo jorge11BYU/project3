@@ -1,5 +1,18 @@
 <%- include('partials/header') %>
 
+<div class="row align-items-center mb-4">
+    <div class="col-md-4">
+        <h2>Message Board</h2>
+    </div>
+    <div class="col-md-8">
+        <form action="/board" method="GET" class="d-flex">
+            <input type="text" name="search" class="form-control me-2" placeholder="Search messages or usernames..." value="<%= searchTerm || '' %>">
+            <button type="submit" class="btn btn-outline-secondary">Search</button>
+            <% if(searchTerm) { %> <a href="/board" class="btn btn-link">Clear</a> <% } %>
+        </form>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-md-4 mb-4">
         <div class="card shadow-sm sticky-top" style="top: 20px;">
@@ -18,10 +31,9 @@
     </div>
 
     <div class="col-md-8">
-        <h3 class="mb-3">Latest Messages</h3>
         <div class="list-group shadow-sm">
             <% if (messages.length === 0) { %>
-                <div class="list-group-item text-center py-4 text-muted">No messages yet. Be the first to post!</div>
+                <div class="list-group-item text-center py-4 text-muted">No messages match your search.</div>
             <% } %>
             <% messages.forEach(m => { %>
                 <a href="/board/thread/<%= m.message_id %>" class="list-group-item list-group-item-action p-4">

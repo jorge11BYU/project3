@@ -1,15 +1,24 @@
 <%- include('partials/header') %>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Shared Calendar</h2>
+<div class="row align-items-center mb-4">
+    <div class="col-md-6">
+        <h2>Shared Calendar</h2>
     </div>
+    <div class="col-md-6">
+        <form action="/calendar" method="GET" class="d-flex">
+            <input type="text" name="search" class="form-control me-2" placeholder="Search event titles..." value="<%= searchTerm || '' %>">
+            <button type="submit" class="btn btn-outline-secondary">Search</button>
+            <% if(searchTerm) { %> <a href="/calendar" class="btn btn-link">Clear</a> <% } %>
+        </form>
+    </div>
+</div>
 
 <div class="row">
     <% if(events.length === 0) { %>
         <div class="col-12">
             <div class="card shadow-sm p-5 text-center text-muted">
-                <h4>No upcoming events</h4>
-                <p>Enjoy the free time!</p>
+                <h4>No matching events found</h4>
+                <a href="/calendar" class="btn btn-sm btn-outline-primary mt-2">View All Events</a>
             </div>
         </div>
     <% } %>

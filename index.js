@@ -1,9 +1,9 @@
-import 'dotenv/config';
+import 'dotenv/config'; 
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import session from "express-session";
-import db from "./db.js";
+import db from "./db.js"; 
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -15,17 +15,16 @@ const __dirname = path.dirname(__filename);
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true })); 
 
-// --- Session Configuration ---
+// --- Session ---
 app.use(session({
   secret: process.env.SESSION_SECRET || 'dev_secret_key',
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false }
+  cookie: { secure: false } 
 }));
 
-// --- Security Middleware ---
 function checkAuth(req, res, next) {
   if (req.session.user) {
     next();
@@ -38,7 +37,7 @@ function checkAuth(req, res, next) {
 // ROUTES
 // ==================================================================
 
-// --- LOGIN & AUTH ---
+// --- LOGIN ---
 app.get("/login", (req, res) => {
   res.render("login", { error: null });
 });
@@ -47,7 +46,7 @@ app.post("/login", async (req, res) => {
   const { username, password } = req.body;
   try {
     const user = await db('users').where({ username }).first();
-    if (user && user.password_hash === password) {
+    if (user && user.password_hash === password) { 
       req.session.user = user;
       res.redirect("/");
     } else {
@@ -63,10 +62,9 @@ app.get("/logout", (req, res) => {
   req.session.destroy(() => res.redirect('/login'));
 });
 
-// --- DASHBOARD (New Logic for Widgets) ---
+// --- DASHBOARD ---
 app.get("/", checkAuth, async (req, res) => {
   try {
-    // 1. Fetch 3 most recent pending maintenance requests
     const maintenance = await db('maintenance_requests')
       .join('properties', 'maintenance_requests.property_id', 'properties.property_id')
       .where('status', 'Pending')
@@ -74,39 +72,23 @@ app.get("/", checkAuth, async (req, res) => {
       .orderBy('date_reported', 'desc')
       .limit(3);
 
-    // 2. Fetch upcoming calendar events (next 5)
     const events = await db('calendar_events')
       .where('start_time', '>=', new Date())
       .orderBy('start_time', 'asc')
       .limit(5);
 
-    // 3. Fetch recent messages
     const messages = await db('messages')
-      .orderBy('created_time', 'desc')
-      .limit(3);
+        .orderBy('created_time', 'desc')
+        .limit(3);
 
-    // 4. Fetch recent expenses
     const expenses = await db('expenses')
-      .orderBy('expense_date', 'desc')
-      .limit(5);
+        .orderBy('expense_date', 'desc')
+        .limit(5);
 
-    res.render("landingpage", {
-      user: req.session.user,
-      maintenance,
-      events,
-      messages,
-      expenses
-    });
+    res.render("landingpage", { user: req.session.user, maintenance, events, messages, expenses });
   } catch (err) {
-    console.error("Dashboard Error:", err);
-    // Render with empty arrays so page doesn't crash if DB fails
-    res.render("landingpage", {
-      user: req.session.user,
-      maintenance: [],
-      events: [],
-      messages: [],
-      expenses: []
-    });
+    console.error(err);
+    res.render("landingpage", { user: req.session.user, maintenance: [], events: [], messages: [], expenses: [] });
   }
 });
 
@@ -114,14 +96,25 @@ app.get("/landingpage", checkAuth, (req, res) => {
   res.redirect("/");
 });
 
-// --- UNITS (PROPERTIES) ---
+// --- UNITS (Properties don't have dates, so logic is same) ---
 app.get("/units", checkAuth, async (req, res) => {
   try {
-    const properties = await db('properties').select('*').orderBy('property_id');
-    res.render("units_list", { properties });
+      const search = req.query.search;
+      let query = db('properties').select('*').orderBy('property_id');
+      
+      if (search) {
+          query.where(builder => {
+             builder.where('nickname', 'ilike', `%${search}%`)
+               .orWhere('city', 'ilike', `%${search}%`)
+               .orWhere('state', 'ilike', `%${search}%`);
+          });
+      }
+      
+      const properties = await query;
+      res.render("units_list", { properties, searchTerm: search });
   } catch (err) {
-    console.error(err);
-    res.send("Error loading properties");
+      console.error(err);
+      res.send("Error loading properties");
   }
 });
 
@@ -132,11 +125,11 @@ app.get("/units/:id", checkAuth, async (req, res) => {
 
 app.post("/units/add", checkAuth, async (req, res) => {
   await db('properties').insert({
-    user_id: req.session.user.user_id,
+    user_id: req.session.user.user_id, 
     nickname: req.body.nickname,
     city: req.body.city,
     state: req.body.state,
-    property_type: 'Condo'
+    property_type: 'Condo' 
   });
   res.redirect("/units");
 });
@@ -146,13 +139,26 @@ app.post("/units/delete/:id", checkAuth, async (req, res) => {
   res.redirect("/units");
 });
 
-// --- MAINTENANCE ---
+// --- MAINTENANCE (Updated for Date Search) ---
 app.get("/maintenance", checkAuth, async (req, res) => {
-  const requests = await db('maintenance_requests')
+  const search = req.query.search;
+  let query = db('maintenance_requests')
     .join('properties', 'maintenance_requests.property_id', 'properties.property_id')
     .select('maintenance_requests.*', 'properties.nickname')
     .orderBy('date_reported', 'desc');
-  res.render("maintenance_list", { requests });
+
+  if (search) {
+      query.where(builder => {
+          builder.where('maintenance_requests.description', 'ilike', `%${search}%`)
+                 .orWhere('properties.nickname', 'ilike', `%${search}%`)
+                 .orWhere('maintenance_requests.status', 'ilike', `%${search}%`)
+                 // Allow searching "December", "2025", "Monday", etc.
+                 .orWhereRaw("TO_CHAR(date_reported, 'FMDay, FMMonth DD, YYYY') ILIKE ?", [`%${search}%`]);
+      });
+  }
+
+  const requests = await query;
+  res.render("maintenance_list", { requests, searchTerm: search });
 });
 
 app.get("/maintenance/new", checkAuth, async (req, res) => {
@@ -186,13 +192,26 @@ app.post("/maintenance/complete/:id", checkAuth, async (req, res) => {
   res.redirect("/maintenance");
 });
 
-// --- EXPENSES ---
+// --- EXPENSES (Updated for Date Search) ---
 app.get("/expenses", checkAuth, async (req, res) => {
-  const expenses = await db('expenses')
+  const search = req.query.search;
+  let query = db('expenses')
     .join('properties', 'expenses.property_id', 'properties.property_id')
     .select('expenses.*', 'properties.nickname')
     .orderBy('expense_date', 'desc');
-  res.render("expenses_month", { expenses });
+
+  if (search) {
+      query.where(builder => {
+          builder.where('expenses.vendor', 'ilike', `%${search}%`)
+                 .orWhere('expenses.expense_category', 'ilike', `%${search}%`)
+                 .orWhere('properties.nickname', 'ilike', `%${search}%`)
+                 // Date Search
+                 .orWhereRaw("TO_CHAR(expense_date, 'FMDay, FMMonth DD, YYYY') ILIKE ?", [`%${search}%`]);
+      });
+  }
+
+  const expenses = await query;
+  res.render("expenses_month", { expenses, searchTerm: search });
 });
 
 app.get("/expenses/new", checkAuth, async (req, res) => {
@@ -211,13 +230,25 @@ app.post("/expenses/add", checkAuth, async (req, res) => {
   res.redirect("/expenses");
 });
 
-// --- MESSAGE BOARD ---
+// --- MESSAGE BOARD (Updated for Date Search) ---
 app.get("/board", checkAuth, async (req, res) => {
-  const messages = await db('messages')
+  const search = req.query.search;
+  let query = db('messages')
     .join('users', 'messages.user_id', 'users.user_id')
     .select('messages.*', 'users.username')
     .orderBy('created_time', 'desc');
-  res.render("board", { messages, user: req.session.user });
+
+  if (search) {
+      query.where(builder => {
+        builder.where('messages.message', 'ilike', `%${search}%`)
+           .orWhere('users.username', 'ilike', `%${search}%`)
+           // Date Search (Timestamp requires casting)
+           .orWhereRaw("TO_CHAR(created_time, 'FMDay, FMMonth DD, YYYY') ILIKE ?", [`%${search}%`]);
+      });
+  }
+
+  const messages = await query;
+  res.render("board", { messages, user: req.session.user, searchTerm: search });
 });
 
 app.get("/board/thread/:id", checkAuth, async (req, res) => {
@@ -238,18 +269,27 @@ app.post("/board/add", checkAuth, async (req, res) => {
   res.redirect("/board");
 });
 
-// --- CALENDAR ---
+// --- CALENDAR (Updated for Date Search) ---
 app.get("/calendar", checkAuth, async (req, res) => {
-  const events = await db('calendar_events').select('*').orderBy('start_time');
-  res.render("calendar", { events });
+  const search = req.query.search;
+  let query = db('calendar_events').select('*').orderBy('start_time');
+  
+  if (search) {
+      query.where(builder => {
+        builder.where('event_title', 'ilike', `%${search}%`)
+        // Date Search on Start Time
+        .orWhereRaw("TO_CHAR(start_time, 'FMDay, FMMonth DD, YYYY') ILIKE ?", [`%${search}%`]);
+      });
+  }
+
+  const events = await query;
+  res.render("calendar", { events, searchTerm: search });
 });
 
-// --- PROFILE ---
 app.get("/profile", checkAuth, (req, res) => {
   res.render("profile", { user: req.session.user });
 });
 
-// --- SERVER START ---
 app.listen(port, () => {
   console.log(`Condo Manager running on http://localhost:${port}`);
 });
