@@ -1,35 +1,50 @@
 <%- include('partials/header') %>
 
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card shadow-sm">
-            <div class="card-header d-flex justify-content-between align-items-center bg-<%= request.status === 'Completed' ? 'success' : 'warning' %> text-<%= request.status === 'Completed' ? 'white' : 'dark' %>">
-                <h5 class="mb-0">Request #<%= request.request_id %></h5>
-                <span class="fw-bold"><%= request.status.toUpperCase() %></span>
-            </div>
-            <div class="card-body">
-                <h4 class="card-title mb-1"><%= request.nickname %></h4>
-                <p class="text-muted small">Reported on <%= new Date(request.date_reported).toDateString() %></p>
-
-                <div class="p-3 bg-light rounded border mb-4">
-                    <h6 class="text-uppercase text-muted small">Issue Description</h6>
-                    <p class="mb-0 fs-5"><%= request.description %></p>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div
+                    class="card-header d-flex justify-content-between align-items-center bg-<%= request.status === 'Completed' ? 'success' : 'warning' %> text-<%= request.status === 'Completed' ? 'white' : 'dark' %>">
+                    <h5 class="mb-0">Request #<%= request.request_id %>
+                    </h5>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="fw-bold">
+                            <%= request.status.toUpperCase() %>
+                        </span>
+                        <a href="/maintenance"
+                            class="btn btn-sm <%= request.status === 'Completed' ? 'btn-outline-light' : 'btn-outline-dark' %>">&larr;
+                            Back</a>
+                    </div>
                 </div>
+                <div class="card-body">
+                    <h4 class="card-title mb-1">
+                        <%= request.nickname %>
+                    </h4>
+                    <p class="text-muted small">Reported on <%= new Date(request.date_reported).toDateString() %>
+                    </p>
 
-                <% if (request.date_completed) { %>
-                    <div class="alert alert-success">
-                        <strong>Completed on:</strong> <%= new Date(request.date_completed).toDateString() %>
+                    <div class="p-3 bg-light rounded border mb-4">
+                        <h6 class="text-uppercase text-muted small">Issue Description</h6>
+                        <p class="mb-0 fs-5">
+                            <%= request.description %>
+                        </p>
                     </div>
-                <% } else { %>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <a href="/maintenance" class="text-decoration-none text-muted">&larr; Back to List</a>
-                        <form action="/maintenance/complete/<%= request.request_id %>" method="POST">
-                            <button type="submit" class="btn btn-success btn-lg shadow-sm">Mark as Completed</button>
-                        </form>
-                    </div>
-                <% } %>
+
+                    <% if (request.date_completed) { %>
+                        <div class="alert alert-success">
+                            <strong>Completed on:</strong>
+                            <%= new Date(request.date_completed).toDateString() %>
+                        </div>
+                        <% } else { %>
+                            <div class="d-flex justify-content-end align-items-center">
+                                <form action="/maintenance/complete/<%= request.request_id %>" method="POST">
+                                    <button type="submit" class="btn btn-success btn-lg shadow-sm">Mark as
+                                        Completed</button>
+                                </form>
+                            </div>
+                            <% } %>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<%- include('partials/footer') %>
+    <%- include('partials/footer') %>
